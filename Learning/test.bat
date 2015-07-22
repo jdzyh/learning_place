@@ -36,14 +36,24 @@
 
 :StartLabel
 @echo off &setlocal enabledelayedexpansion
-
-set tmp_path = C:\Python34\
-for /f "usebackq delims== tokens=1,*" %%a in (`"path"`) do ( 
-	set pall = %%b
+for /f "delims== tokens=1,*" %%f in ('path') do (
+	set str=%%g
 )
-echo %pall% |find /i "%tmp_path%" && set IsNull=true|| set IsNull=false
-
-if %IsNull%==true ( echo aaa )
+echo !str_!
 pause
 
+set tmpStr=java
+
+echo %str%|find /i "tmpStr" && set IsNull=true|| set IsNull=false
+if not %IsNull%==true ( echo aaa )
+
+pause
+
+
+@echo off &setlocal enabledelayedexpansion
+for /f "delims== tokens=1,*" %%f in ('path') do (
+	set str=%%g
+)
+echo !str_!
+pause
 
