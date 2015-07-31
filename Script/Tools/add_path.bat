@@ -1,7 +1,7 @@
 @echo off &setlocal enabledelayedexpansion
 
 ::作为参数传入:path_dst
-set path_dst=%1
+ECHO $ ----START----
 
 for /f "tokens=1,2*" %%a in (
 	'reg query "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment" /v Path' 
@@ -13,13 +13,16 @@ for /f "tokens=1,2*" %%a in (
 set path_split_right=%path_all%
 call :Loop_split
 
+ECHO $ Input dst_path:
+set /p path_dst=
+ECHO $ !path_dst!
 
 echo $ Current Path :
-echo $	!path_all! |find /i "%path_dst%" && set FindPath=true || set FindPath=false &echo $	!path_all!
+echo $	"!path_all!" |find /i "!path_dst!" && set FindPath=true || set FindPath=false &echo $	!path_all!
 echo $
 echo $ FindPath ? : !FindPath!
 
-if /i %FindPath%==true (
+if /i !FindPath!==true (
 	echo $ Path Already Exists!
 
 ) else (
