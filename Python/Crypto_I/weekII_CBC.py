@@ -1,6 +1,7 @@
 #coding: utf-8
 from Crypto.Cipher import AES
 from Crypto import Random
+from Crypto.Util import Counter
 
 def strxor(a, b):     # xor two strings of different lengths
     if len(a) > len(b):
@@ -13,6 +14,8 @@ def get_AES_iv_cypher(CT):
 	return CT[0:32],CT[32:]
 	
 def hex2ascii(hex):
+	ret =hex.decode('hex')
+	'''
 	ret = ""
 	print "START to parse : " + hex
 	
@@ -25,6 +28,7 @@ def hex2ascii(hex):
 		#print ch + " / " + ach
 		ret = ret + str( ach )	
 		hex = hex[2:]
+	'''
 	return ret
 	
 ####################################
@@ -36,6 +40,15 @@ key_2_CTR = "36f18357be4dbd77f050515c73fcf9f2"
 CT_1_CTR  = "69dda8455c7dd4254bf353b773304eec0ec7702330098ce7f7520d1cbbb20fc388d1b0adb5054dbd7370849dbf0b88d393f252e764f1f5f7ad97ef79d59ce29f5f51eeca32eabedd9afa9329"
 CT_2_CTR  = "770b80259ec33beb2561358a9f2dc617e46218c0a53cbeca695ae45faa8952aa0e311bde9d4e01726d3184c34451"
 #####################################
+'''
+iv,cypher = get_AES_iv_cypher(CT_1_CBC)
+iv__ = hex2ascii(iv)
+key = hex2ascii(key_1_CBC)
+cypher__ = hex2ascii(cypher)
+
+obj = AES.new(key, AES.MODE_CBC, iv__)
+PT = obj.decrypt(cypher__)
+'''
 iv,cypher = get_AES_iv_cypher(CT_1_CTR)
 iv__ = hex2ascii(iv)
 key = hex2ascii(key_2_CTR)
@@ -43,7 +56,9 @@ cypher__ = hex2ascii(cypher)
 
 #print iv__
 #print cypher__
-
-obj = AES.new(key, AES.MODE_CTR, iv__, iv__)
+ctr = Counter.new(128, initial_value=int(iv__,16))
+print ctr
+obj = AES.new(key, mode=AES.MODE_CTR, IV=iv__, counter=ctr)
 PT = obj.decrypt(cypher__)
+
 print "Answer is : " + PT
