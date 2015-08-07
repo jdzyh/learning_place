@@ -2,16 +2,16 @@
 
 ::作为参数传入:path_dst
 ECHO [+] ----START----
-:L_main_loop_start
-set /p command=
-if /i !command!==mod (
-	call :L_get_splited_path
 
-) else (
-	echo [+]
+for /f "tokens=1,2*" %%a in (
+	'reg query "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment" /v Path' 
+) do (
+	set path_all=%%c
 )
-goto L_main_loop_start
-:L_main_loop_end
+::将path_all中的分号替换为空格
+::set path_all=%path_all:;= %
+set path_split_right=%path_all%
+call :Loop_split
 
 ECHO [+] Input dst_path:
 set /p path_dst=
@@ -42,37 +42,15 @@ echo [+]
 echo [+]	
 goto :eof
 
-::-----------------------------------------
-::Get Splited Path
-::-----------------------------------------
-:L_get_splited_path
-for /f "tokens=1,2*" %%a in (
-	'reg query "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment" /v Path' 
-) do (
-	set path_all=%%c
-)
-
-ECHO [+] Show Splited Path
-
-set path_split_right=%path_all%
-set count=0
-:L_loop_split_start
+:Loop_split
 for /f "delims=; tokens=1*" %%c in ("%path_split_right%") do (
-	echo [!count!]	%%c
+	echo [+]	%%c
 	if %%d==nul (
-		goto Loop_Split_End
+		goto Loop_split_End
 	) else (
 		set path_split_right=%%d
-		set /a count+=1
-		goto L_loop_split_start
+		goto Loop_split
 	)
 )
-:L_loop_split_end
-::) else (
-::if /i %1==-p (
-::ECHO [+] Show All Path
-::ECHO [+] !path_all!
-::)
-::)
-
+:Loop_split_End
 goto :eof
