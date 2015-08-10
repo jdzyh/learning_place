@@ -62,7 +62,7 @@ ECHO [+] Input New Path :
 set /p path_dst=
 
 echo [+] Current Path :
-echo [+] !path_all! |find /i "!path_dst!" && set FindPath=true || set FindPath=false
+echo [+] '!path_all!' |find /i "!path_dst!" && set FindPath=true || set FindPath=false
 echo [+]
 echo [+] FindPath ? : !FindPath!
 
@@ -104,7 +104,7 @@ for /f "delims=; tokens=1*" %%c in ("%path_split_right%") do (
 
 		if /i !ans!==y (
 			set new_all_path="!path_split_left:~1!;!mod_path!;%%d"
-			if "!new_all_path:~-1!==;" (
+			if !new_all_path:~-1!==';' (
 				set new_all_path=!new_all_path:~0,-1!
 			)
 			::reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment" /v Path /t REG_EXPAND_SZ /d "%new_all_path%" /f
