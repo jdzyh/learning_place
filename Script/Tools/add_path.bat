@@ -72,9 +72,9 @@ if /i %FindPath%==true (
 ) else (
 	echo [+] Sure To Add New Path ? [y/n]
 )
-set /p ans=
+set /p ans_add=
 echo [+]
-if /i !ans!==y (
+if /i %ans_add%==y (
 	reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment" /v Path /t REG_EXPAND_SZ /d "%path_all%;%path_dst%" /f
 )
 :L_add_new_path_end
@@ -89,25 +89,24 @@ set /p id=
 ECHO [+] Input Mod Path :
 set /p mod_path=
 
-set path_split_right=%path_all%
+set path_split_right=!path_all!
 set path_split_left=
 set count=0
 
 :L_loop_path_id_start
 for /f "delims=; tokens=1*" %%c in ("%path_split_right%") do (
-
 	if !count!==!id! (
 		ECHO [+] Old Path[!count!] : %%c
-		ECHO [+] New Path[!count!] : %mod_path%
+		ECHO [+] New Path[!count!] : !mod_path!
 		ECHO [+] Sure To Edit This Path ? [y/n]
-		set /p ans=
-
-		if /i !ans!==y (
-			set new_all_path="!path_split_left:~1!;!mod_path!;%%d"
-			if !new_all_path:~-1!==';' (
+		set /p ans_mod=
+		if /i !ans_mod!==y (
+			set new_all_path=!path_split_left:~1!;!mod_path!;%%d
+			set chr=;
+			if !new_all_path:~-1!==!chr! (
 				set new_all_path=!new_all_path:~0,-1!
 			)
-			::reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment" /v Path /t REG_EXPAND_SZ /d "%new_all_path%" /f
+			reg add "HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment" /v Path /t REG_EXPAND_SZ /d "%new_all_path%" /f
 			ECHO !new_all_path!
 			path
 			goto L_loop_path_id_end
@@ -115,7 +114,6 @@ for /f "delims=; tokens=1*" %%c in ("%path_split_right%") do (
 			ECHO [+] Give Up !
 			goto L_loop_path_id_end
 		)
-		
 	) else (
 		set path_split_left=!path_split_left!;%%c
 		set path_split_right=%%d
